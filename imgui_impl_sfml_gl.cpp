@@ -171,9 +171,12 @@ bool ImGui_ImplSfmlGL_ProcessEvent( sf::Event& event )
 
             return true;
         }
-        case sf::Event::TextEntered:
-            // TODO
-            return false;
+        case sf::Event::TextEntered: {
+            char output[6] = { 0, 0, 0, 0, 0, 0 };
+            sf::Utf8::encode( event.text.unicode, output );
+            io.AddInputCharactersUTF8( output );
+            return true;
+        }
         case sf::Event::KeyPressed:
         case sf::Event::KeyReleased:
             io.KeysDown[ event.key.code ] = ( event.type == sf::Event::KeyPressed );
