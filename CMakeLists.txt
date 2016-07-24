@@ -10,6 +10,7 @@ find_package(SFML 2.3 COMPONENTS graphics window system REQUIRED)
 find_package(GLEW)
 
 include_directories(${SFML_INCLUDE_DIR})
+include_directories(vendor/imgui)
 
 add_library(imgui OBJECT
         vendor/imgui/imgui.cpp
@@ -17,7 +18,12 @@ add_library(imgui OBJECT
         vendor/imgui/imgui_demo.cpp
         )
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES
+        imgui_impl_sfml_gl.cpp
+        imgui_impl_sfml_gl.h
+        main.cpp)
+
 add_executable(dear_imgui_im_sfml ${SOURCE_FILES} $<TARGET_OBJECTS:imgui>)
 target_link_libraries(dear_imgui_im_sfml ${SFML_LIBRARIES})
 target_link_libraries(dear_imgui_im_sfml ${SFML_DEPENDENCIES})
+target_link_libraries(dear_imgui_im_sfml ${GLEW_LIBRARIES} GL)
