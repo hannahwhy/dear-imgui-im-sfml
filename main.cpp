@@ -22,7 +22,14 @@ int main()
 
     window.setActive( true );
     window.setVisible( true );
+    window.setVerticalSyncEnabled( true );
+
     sf::Clock clock;
+
+    sf::RectangleShape shape;
+    shape.setFillColor( sf::Color::Red );
+    shape.setSize( sf::Vector2f( 1.0f, 1.0f ) );
+    shape.setOrigin( sf::Vector2f( 0.5f, 0.5f ) );
 
     while ( running ) {
         sf::Event event;
@@ -41,11 +48,23 @@ int main()
             ImGui_ImplSfmlGL_ProcessEvent( event );
         }
 
-        ImGui_ImplSfmlGL_NewFrame( window, clock.restart() );
+        const sf::Time elapsed = clock.restart();
+        ImGui_ImplSfmlGL_NewFrame( window, elapsed );
         ImGui::ShowTestWindow( &show_test_window );
 
+        sf::View view;
+        view.setCenter( sf::Vector2f( 0.0f, 0.0f ) );
+        view.setSize( sf::Vector2f( 10.0f, 10.0f ) );
+
+        shape.rotate( 0.5f );
+
         window.clear();
+        window.setView( view );
+        window.draw( shape );
+
         ImGui::Render();
+        window.resetGLStates();
+
         window.display();
     }
 
