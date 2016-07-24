@@ -151,7 +151,7 @@ bool ImGui_ImplSfmlGL_ProcessEvent( sf::Event& event )
             io.MousePos = ImVec2( (float)event.mouseMove.x, (float)event.mouseMove.y );
             return true;
         case sf::Event::MouseWheelScrolled:
-            io.MouseWheel = event.mouseWheelScroll.y;
+            io.MouseWheel = event.mouseWheelScroll.delta;
             return true;
         case sf::Event::MouseButtonPressed:
         case sf::Event::MouseButtonReleased: {
