@@ -150,6 +150,9 @@ bool ImGui_ImplSfmlGL_ProcessEvent( sf::Event& event )
         case sf::Event::MouseMoved:
             io.MousePos = ImVec2( (float)event.mouseMove.x, (float)event.mouseMove.y );
             return true;
+        case sf::Event::LostFocus:
+            io.MousePos = ImVec2( -1.0f, -1.0f );
+            return true;
         case sf::Event::MouseWheelScrolled:
             io.MouseWheel = event.mouseWheelScroll.delta;
             return true;
