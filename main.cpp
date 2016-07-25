@@ -1,6 +1,6 @@
 #include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 #include <imgui.h>
+#include <GL/glew.h>
 #include "imgui_impl_sfml_gl.h"
 
 int main()
@@ -8,12 +8,15 @@ int main()
     sf::ContextSettings context_settings;
     context_settings.depthBits = 24;
     context_settings.stencilBits = 8;
-    context_settings.majorVersion = 2;
-    context_settings.minorVersion = 1;
-    context_settings.attributeFlags = sf::ContextSettings::Default;
+    context_settings.antialiasingLevel = 2;
+    context_settings.majorVersion = 3;
+    context_settings.minorVersion = 2;
+    context_settings.attributeFlags = sf::ContextSettings::Attribute::Core;
 
-    sf::RenderWindow window{ sf::VideoMode{ 1280, 720 }, "Dear imgui,", sf::Style::Default, context_settings };
-    sf::VideoMode mode( 1280, 720 );
+    sf::Window window{ sf::VideoMode{ 1280, 720 }, "Dear imgui,", sf::Style::Default, context_settings };
+
+    glewExperimental = GL_TRUE;
+    glewInit();
 
     ImGui_ImplSfmlGL_Init();
 
@@ -25,11 +28,6 @@ int main()
     window.setVerticalSyncEnabled( true );
 
     sf::Clock clock;
-
-    sf::RectangleShape shape;
-    shape.setFillColor( sf::Color::Red );
-    shape.setSize( sf::Vector2f( 1.0f, 1.0f ) );
-    shape.setOrigin( sf::Vector2f( 0.5f, 0.5f ) );
 
     while ( running ) {
         sf::Event event;
@@ -52,19 +50,8 @@ int main()
         ImGui_ImplSfmlGL_NewFrame( window, elapsed );
         ImGui::ShowTestWindow( &show_test_window );
 
-        sf::View view;
-        view.setCenter( sf::Vector2f( 0.0f, 0.0f ) );
-        view.setSize( sf::Vector2f( 10.0f, 10.0f ) );
-
-        shape.rotate( 0.5f );
-
-        window.clear();
-        window.setView( view );
-        window.draw( shape );
-
+        glClear(GL_COLOR_BUFFER_BIT);
         ImGui::Render();
-        window.resetGLStates();
-
         window.display();
     }
 
