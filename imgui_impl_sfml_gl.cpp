@@ -125,19 +125,17 @@ void ImGui_ImplSfmlGL_Shutdown()
     ImGui::Shutdown();
 }
 
-void ImGui_ImplSfmlGL_NewFrame( sf::Window& window, const sf::Time& dt )
+void ImGui_ImplSfmlGL_NewFrame( sf::RenderTarget& target, const sf::Time& dt )
 {
     if ( !g_DeviceObjectsCreated )
         ImGui_ImplSfmlGL_CreateDeviceObjects();
 
     ImGuiIO& io = ImGui::GetIO();
 
-    sf::Vector2u size = window.getSize();
+    sf::Vector2u size = target.getSize();
     io.DisplaySize = ImVec2((float)size.x, (float)size.y);
     io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
     io.DeltaTime = dt.asSeconds();
-
-    window.setMouseCursorVisible(!io.MouseDrawCursor);
 
     ImGui::NewFrame();
 }

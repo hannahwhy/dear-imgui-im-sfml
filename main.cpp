@@ -52,6 +52,9 @@ int main()
         ImGui_ImplSfmlGL_NewFrame( window, elapsed );
         ImGui::ShowTestWindow( &show_test_window );
 
+        ImGuiIO& io = ImGui::GetIO();
+        window.setMouseCursorVisible(!io.MouseDrawCursor);
+
         sf::View view;
         view.setCenter( sf::Vector2f( 0.0f, 0.0f ) );
         view.setSize( sf::Vector2f( 10.0f, 10.0f ) );
