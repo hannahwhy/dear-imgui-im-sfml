@@ -4,7 +4,6 @@
 #include "imgui_impl_sfml_gl.h"
 
 // Data
-static bool g_DeviceObjectsCreated = false;
 static GLuint g_FontTexture = 0;
 
 // This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
@@ -127,7 +126,7 @@ void ImGui_ImplSfmlGL_Shutdown()
 
 void ImGui_ImplSfmlGL_NewFrame( sf::RenderTarget& target, const sf::Time& dt )
 {
-    if ( !g_DeviceObjectsCreated )
+    if ( !g_FontTexture )
         ImGui_ImplSfmlGL_CreateDeviceObjects();
 
     ImGuiIO& io = ImGui::GetIO();
