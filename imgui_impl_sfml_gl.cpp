@@ -161,7 +161,7 @@ void ImGui_ImplSfmlGL_NewFrame( sf::Window& window, const sf::Time& dt )
     ImGui::NewFrame();
 }
 
-bool ImGui_ImplSfmlGL_ProcessEvent( sf::Event& event )
+bool ImGui_ImplSfmlGL_ProcessEvent( const sf::Event& event )
 {
     ImGuiIO& io = ImGui::GetIO();
 

@@ -6,7 +6,7 @@
 bool ImGui_ImplSfmlGL_Init();
 void ImGui_ImplSfmlGL_Shutdown();
 void ImGui_ImplSfmlGL_NewFrame( sf::Window& window, const sf::Time& dt );
-bool ImGui_ImplSfmlGL_ProcessEvent( sf::Event& event );
+bool ImGui_ImplSfmlGL_ProcessEvent( const sf::Event& event );
 
 void ImGui_ImplSfmlGL_InvalidateDeviceObjects();
 bool ImGui_ImplSfmlGL_CreateDeviceObjects();
