@@ -6,6 +6,7 @@
 // Data
 static bool g_DeviceObjectsCreated = false;
 static GLuint g_FontTexture = 0;
+static bool g_MousePressed[5] = { false, false, false, false, false };
 
 // OpenGL objects
 static int          g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
@@ -158,6 +159,18 @@ void ImGui_ImplSfmlGL_NewFrame( sf::Window& window, const sf::Time& dt )
 
     window.setMouseCursorVisible(!io.MouseDrawCursor);
 
+    // Get mouse state (again)
+    io.MouseDown[ 0 ] = g_MousePressed[ 0 ] || sf::Mouse::isButtonPressed( sf::Mouse::Button::Left );
+    io.MouseDown[ 1 ] = g_MousePressed[ 1 ] || sf::Mouse::isButtonPressed( sf::Mouse::Button::Middle );
+    io.MouseDown[ 2 ] = g_MousePressed[ 2 ] || sf::Mouse::isButtonPressed( sf::Mouse::Button::Right );
+    io.MouseDown[ 3 ] = g_MousePressed[ 3 ] || sf::Mouse::isButtonPressed( sf::Mouse::Button::XButton1 );
+    io.MouseDown[ 4 ] = g_MousePressed[ 4 ] || sf::Mouse::isButtonPressed( sf::Mouse::Button::XButton2 );
+    g_MousePressed[ 0 ] = false;
+    g_MousePressed[ 1 ] = false;
+    g_MousePressed[ 2 ] = false;
+    g_MousePressed[ 3 ] = false;
+    g_MousePressed[ 4 ] = false;
+
     ImGui::NewFrame();
 }
 
@@ -175,21 +188,19 @@ bool ImGui_ImplSfmlGL_ProcessEvent( const sf::Event& event )
         case sf::Event::MouseWheelScrolled:
             io.MouseWheel = event.mouseWheelScroll.delta;
             return true;
-        case sf::Event::MouseButtonPressed:
-        case sf::Event::MouseButtonReleased: {
-            const auto& down = ( event.type == sf::Event::MouseButtonPressed );
+        case sf::Event::MouseButtonPressed: {
             const auto& button = event.mouseButton.button;
 
             if ( button == sf::Mouse::Button::Left )
-                io.MouseDown[ 0 ] = down;
+                g_MousePressed[ 0 ] = true;
             if ( button == sf::Mouse::Button::Middle )
-                io.MouseDown[ 1 ] = down;
+                g_MousePressed[ 1 ] = true;
             if ( button == sf::Mouse::Button::Right )
-                io.MouseDown[ 2 ] = down;
+                g_MousePressed[ 2 ] = true;
             if ( button == sf::Mouse::Button::XButton1 )
-                io.MouseDown[ 3 ] = down;
+                g_MousePressed[ 3 ] = true;
             if ( button == sf::Mouse::Button::XButton2 )
-                io.MouseDown[ 4 ] = down;
+                g_MousePressed[ 4 ] = true;
 
             return true;
         }
