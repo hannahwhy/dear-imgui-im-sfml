@@ -7,7 +7,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
 
 find_package(SFML 2.4 COMPONENTS window system REQUIRED)
-find_package(GLEW)
 find_package(OpenGL)
 
 include_directories(${SFML_INCLUDE_DIR})
@@ -20,6 +19,7 @@ add_library(imgui OBJECT
         )
 
 set(SOURCE_FILES
+        gl_imgui_gl_core_3_2.cpp
         imgui_impl_sfml_gl.cpp
         imgui_impl_sfml_gl.h
         main.cpp)
@@ -28,4 +28,3 @@ add_executable(dear_imgui_im_sfml ${SOURCE_FILES} $<TARGET_OBJECTS:imgui>)
 target_link_libraries(dear_imgui_im_sfml ${SFML_LIBRARIES})
 target_link_libraries(dear_imgui_im_sfml ${SFML_DEPENDENCIES})
 target_link_libraries(dear_imgui_im_sfml ${OPENGL_LIBRARIES})
-target_link_libraries(dear_imgui_im_sfml ${GLEW_LIBRARIES})

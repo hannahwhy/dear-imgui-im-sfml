@@ -1,7 +1,7 @@
 #include <SFML/System.hpp>
-#include <GL/glew.h>
 #include <imgui.h>
 #include "imgui_impl_sfml_gl.h"
+#include "gl_imgui_gl_core_3_2.hpp"
 
 // Data
 static bool g_DeviceObjectsCreated = false;
@@ -13,6 +13,8 @@ static int          g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
 static int          g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;
 static int          g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
 static unsigned int g_VboHandle = 0, g_VaoHandle = 0, g_ElementsHandle = 0;
+
+namespace gl = imgui::gl;
 
 // This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
 // If text or lines are blurry when integrating ImGui in your engine:
@@ -28,33 +30,33 @@ void ImGui_ImplSfmlGL_RenderDrawLists( ImDrawData* draw_data )
     draw_data->ScaleClipRects(io.DisplayFramebufferScale);
 
     // Backup GL state
-    GLint last_program; glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
-    GLint last_texture; glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-    GLint last_active_texture; glGetIntegerv(GL_ACTIVE_TEXTURE, &last_active_texture);
-    GLint last_array_buffer; glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
-    GLint last_element_array_buffer; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &last_element_array_buffer);
-    GLint last_vertex_array; glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
-    GLint last_blend_src; glGetIntegerv(GL_BLEND_SRC, &last_blend_src);
-    GLint last_blend_dst; glGetIntegerv(GL_BLEND_DST, &last_blend_dst);
-    GLint last_blend_equation_rgb; glGetIntegerv(GL_BLEND_EQUATION_RGB, &last_blend_equation_rgb);
-    GLint last_blend_equation_alpha; glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &last_blend_equation_alpha);
-    GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
-    GLboolean last_enable_blend = glIsEnabled(GL_BLEND);
-    GLboolean last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
-    GLboolean last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
-    GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
+    GLint last_program; gl::GetIntegerv(gl::CURRENT_PROGRAM, &last_program);
+    GLint last_texture; gl::GetIntegerv(gl::TEXTURE_BINDING_2D, &last_texture);
+    GLint last_active_texture; gl::GetIntegerv(gl::ACTIVE_TEXTURE, &last_active_texture);
+    GLint last_array_buffer; gl::GetIntegerv(gl::ARRAY_BUFFER_BINDING, &last_array_buffer);
+    GLint last_element_array_buffer; gl::GetIntegerv(gl::ELEMENT_ARRAY_BUFFER_BINDING, &last_element_array_buffer);
+    GLint last_vertex_array; gl::GetIntegerv(gl::VERTEX_ARRAY_BINDING, &last_vertex_array);
+    GLint last_blend_src; gl::GetIntegerv(gl::BLEND_SRC, &last_blend_src);
+    GLint last_blend_dst; gl::GetIntegerv(gl::BLEND_DST, &last_blend_dst);
+    GLint last_blend_equation_rgb; gl::GetIntegerv(gl::BLEND_EQUATION_RGB, &last_blend_equation_rgb);
+    GLint last_blend_equation_alpha; gl::GetIntegerv(gl::BLEND_EQUATION_ALPHA, &last_blend_equation_alpha);
+    GLint last_viewport[4]; gl::GetIntegerv(gl::VIEWPORT, last_viewport);
+    GLboolean last_enable_blend = gl::IsEnabled(gl::BLEND);
+    GLboolean last_enable_cull_face = gl::IsEnabled(gl::CULL_FACE);
+    GLboolean last_enable_depth_test = gl::IsEnabled(gl::DEPTH_TEST);
+    GLboolean last_enable_scissor_test = gl::IsEnabled(gl::SCISSOR_TEST);
 
     // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
-    glEnable(GL_BLEND);
-    glBlendEquation(GL_FUNC_ADD);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_SCISSOR_TEST);
-    glActiveTexture(GL_TEXTURE0);
+    gl::Enable(gl::BLEND);
+    gl::BlendEquation(gl::FUNC_ADD);
+    gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+    gl::Disable(gl::CULL_FACE);
+    gl::Disable(gl::DEPTH_TEST);
+    gl::Enable(gl::SCISSOR_TEST);
+    gl::ActiveTexture(gl::TEXTURE0);
 
     // Setup orthographic projection matrix
-    glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
+    gl::Viewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
     const float ortho_projection[4][4] =
             {
                     { 2.0f/io.DisplaySize.x, 0.0f,                   0.0f, 0.0f },
@@ -62,21 +64,21 @@ void ImGui_ImplSfmlGL_RenderDrawLists( ImDrawData* draw_data )
                     { 0.0f,                  0.0f,                  -1.0f, 0.0f },
                     {-1.0f,                  1.0f,                   0.0f, 1.0f },
             };
-    glUseProgram(g_ShaderHandle);
-    glUniform1i(g_AttribLocationTex, 0);
-    glUniformMatrix4fv(g_AttribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
-    glBindVertexArray(g_VaoHandle);
+    gl::UseProgram(g_ShaderHandle);
+    gl::Uniform1i(g_AttribLocationTex, 0);
+    gl::UniformMatrix4fv(g_AttribLocationProjMtx, 1, gl::FALSE_, &ortho_projection[0][0]);
+    gl::BindVertexArray(g_VaoHandle);
 
     for (int n = 0; n < draw_data->CmdListsCount; n++)
     {
         const ImDrawList* cmd_list = draw_data->CmdLists[n];
         const ImDrawIdx* idx_buffer_offset = 0;
 
-        glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)cmd_list->VtxBuffer.size() * sizeof(ImDrawVert), (GLvoid*)&cmd_list->VtxBuffer.front(), GL_STREAM_DRAW);
+        gl::BindBuffer(gl::ARRAY_BUFFER, g_VboHandle);
+        gl::BufferData(gl::ARRAY_BUFFER, (GLsizeiptr)cmd_list->VtxBuffer.size() * sizeof(ImDrawVert), (GLvoid*)&cmd_list->VtxBuffer.front(), gl::STREAM_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx), (GLvoid*)&cmd_list->IdxBuffer.front(), GL_STREAM_DRAW);
+        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
+        gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, (GLsizeiptr)cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx), (GLvoid*)&cmd_list->IdxBuffer.front(), gl::STREAM_DRAW);
 
         for (const ImDrawCmd* pcmd = cmd_list->CmdBuffer.begin(); pcmd != cmd_list->CmdBuffer.end(); pcmd++)
         {
@@ -86,28 +88,28 @@ void ImGui_ImplSfmlGL_RenderDrawLists( ImDrawData* draw_data )
             }
             else
             {
-                glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
-                glScissor((int)pcmd->ClipRect.x, (int)(fb_height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
-                glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset);
+                gl::BindTexture(gl::TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
+                gl::Scissor((int)pcmd->ClipRect.x, (int)(fb_height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+                gl::DrawElements(gl::TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? gl::UNSIGNED_SHORT : gl::UNSIGNED_INT, idx_buffer_offset);
             }
             idx_buffer_offset += pcmd->ElemCount;
         }
     }
 
     // Restore modified GL state
-    glUseProgram(last_program);
-    glActiveTexture(last_active_texture);
-    glBindTexture(GL_TEXTURE_2D, last_texture);
-    glBindVertexArray(last_vertex_array);
-    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
-    glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
-    glBlendFunc(last_blend_src, last_blend_dst);
-    if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
-    if (last_enable_cull_face) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
-    if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
-    if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
-    glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
+    gl::UseProgram(last_program);
+    gl::ActiveTexture(last_active_texture);
+    gl::BindTexture(gl::TEXTURE_2D, last_texture);
+    gl::BindVertexArray(last_vertex_array);
+    gl::BindBuffer(gl::ARRAY_BUFFER, last_array_buffer);
+    gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
+    gl::BlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
+    gl::BlendFunc(last_blend_src, last_blend_dst);
+    if (last_enable_blend) gl::Enable(gl::BLEND); else gl::Disable(gl::BLEND);
+    if (last_enable_cull_face) gl::Enable(gl::CULL_FACE); else gl::Disable(gl::CULL_FACE);
+    if (last_enable_depth_test) gl::Enable(gl::DEPTH_TEST); else gl::Disable(gl::DEPTH_TEST);
+    if (last_enable_scissor_test) gl::Enable(gl::SCISSOR_TEST); else gl::Disable(gl::SCISSOR_TEST);
+    gl::Viewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
 }
 
 bool ImGui_ImplSfmlGL_Init()
@@ -135,6 +137,8 @@ bool ImGui_ImplSfmlGL_Init()
     io.KeyMap[ ImGuiKey_Z ] = sf::Keyboard::Z;
 
     io.RenderDrawListsFn = ImGui_ImplSfmlGL_RenderDrawLists;
+
+    gl::sys::LoadFunctions();
 
     return true;
 }
@@ -225,25 +229,25 @@ bool ImGui_ImplSfmlGL_ProcessEvent( const sf::Event& event )
 
 void ImGui_ImplSfmlGL_InvalidateDeviceObjects()
 {
-    if (g_VaoHandle) glDeleteVertexArrays(1, &g_VaoHandle);
-    if (g_VboHandle) glDeleteBuffers(1, &g_VboHandle);
-    if (g_ElementsHandle) glDeleteBuffers(1, &g_ElementsHandle);
+    if (g_VaoHandle) gl::DeleteVertexArrays(1, &g_VaoHandle);
+    if (g_VboHandle) gl::DeleteBuffers(1, &g_VboHandle);
+    if (g_ElementsHandle) gl::DeleteBuffers(1, &g_ElementsHandle);
     g_VaoHandle = g_VboHandle = g_ElementsHandle = 0;
 
-    glDetachShader(g_ShaderHandle, g_VertHandle);
-    glDeleteShader(g_VertHandle);
+    gl::DetachShader(g_ShaderHandle, g_VertHandle);
+    gl::DeleteShader(g_VertHandle);
     g_VertHandle = 0;
 
-    glDetachShader(g_ShaderHandle, g_FragHandle);
-    glDeleteShader(g_FragHandle);
+    gl::DetachShader(g_ShaderHandle, g_FragHandle);
+    gl::DeleteShader(g_FragHandle);
     g_FragHandle = 0;
 
-    glDeleteProgram(g_ShaderHandle);
+    gl::DeleteProgram(g_ShaderHandle);
     g_ShaderHandle = 0;
 
     if (g_FontTexture)
     {
-        glDeleteTextures(1, &g_FontTexture);
+        gl::DeleteTextures(1, &g_FontTexture);
         ImGui::GetIO().Fonts->TexID = 0;
         g_FontTexture = 0;
     }
@@ -259,27 +263,27 @@ static void ImGui_ImplSfmlGL_CreateFontsTexture()
 
     // Upload texture to graphics system
     GLint last_texture;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-    glGenTextures(1, &g_FontTexture);
-    glBindTexture(GL_TEXTURE_2D, g_FontTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    gl::GetIntegerv(gl::TEXTURE_BINDING_2D, &last_texture);
+    gl::GenTextures(1, &g_FontTexture);
+    gl::BindTexture(gl::TEXTURE_2D, g_FontTexture);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
+    gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA, width, height, 0, gl::RGBA, gl::UNSIGNED_BYTE, pixels);
 
     // Store our identifier
     io.Fonts->TexID = (void *)(intptr_t)g_FontTexture;
 
     // Restore state
-    glBindTexture(GL_TEXTURE_2D, last_texture);
+    gl::BindTexture(gl::TEXTURE_2D, last_texture);
 }
 
 bool ImGui_ImplSfmlGL_CreateDeviceObjects()
 {
     // Backup GL state
     GLint last_texture, last_array_buffer, last_vertex_array;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
-    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
+    gl::GetIntegerv(gl::TEXTURE_BINDING_2D, &last_texture);
+    gl::GetIntegerv(gl::ARRAY_BUFFER_BINDING, &last_array_buffer);
+    gl::GetIntegerv(gl::VERTEX_ARRAY_BINDING, &last_vertex_array);
 
     const GLchar *vertex_shader =
             "#version 150\n"
@@ -307,45 +311,45 @@ bool ImGui_ImplSfmlGL_CreateDeviceObjects()
                     "	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
                     "}\n";
 
-    g_ShaderHandle = glCreateProgram();
-    g_VertHandle = glCreateShader(GL_VERTEX_SHADER);
-    g_FragHandle = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(g_VertHandle, 1, &vertex_shader, 0);
-    glShaderSource(g_FragHandle, 1, &fragment_shader, 0);
-    glCompileShader(g_VertHandle);
-    glCompileShader(g_FragHandle);
-    glAttachShader(g_ShaderHandle, g_VertHandle);
-    glAttachShader(g_ShaderHandle, g_FragHandle);
-    glLinkProgram(g_ShaderHandle);
+    g_ShaderHandle = gl::CreateProgram();
+    g_VertHandle = gl::CreateShader(gl::VERTEX_SHADER);
+    g_FragHandle = gl::CreateShader(gl::FRAGMENT_SHADER);
+    gl::ShaderSource(g_VertHandle, 1, &vertex_shader, 0);
+    gl::ShaderSource(g_FragHandle, 1, &fragment_shader, 0);
+    gl::CompileShader(g_VertHandle);
+    gl::CompileShader(g_FragHandle);
+    gl::AttachShader(g_ShaderHandle, g_VertHandle);
+    gl::AttachShader(g_ShaderHandle, g_FragHandle);
+    gl::LinkProgram(g_ShaderHandle);
 
-    g_AttribLocationTex = glGetUniformLocation(g_ShaderHandle, "Texture");
-    g_AttribLocationProjMtx = glGetUniformLocation(g_ShaderHandle, "ProjMtx");
-    g_AttribLocationPosition = glGetAttribLocation(g_ShaderHandle, "Position");
-    g_AttribLocationUV = glGetAttribLocation(g_ShaderHandle, "UV");
-    g_AttribLocationColor = glGetAttribLocation(g_ShaderHandle, "Color");
+    g_AttribLocationTex = gl::GetUniformLocation(g_ShaderHandle, "Texture");
+    g_AttribLocationProjMtx = gl::GetUniformLocation(g_ShaderHandle, "ProjMtx");
+    g_AttribLocationPosition = gl::GetAttribLocation(g_ShaderHandle, "Position");
+    g_AttribLocationUV = gl::GetAttribLocation(g_ShaderHandle, "UV");
+    g_AttribLocationColor = gl::GetAttribLocation(g_ShaderHandle, "Color");
 
-    glGenBuffers(1, &g_VboHandle);
-    glGenBuffers(1, &g_ElementsHandle);
+    gl::GenBuffers(1, &g_VboHandle);
+    gl::GenBuffers(1, &g_ElementsHandle);
 
-    glGenVertexArrays(1, &g_VaoHandle);
-    glBindVertexArray(g_VaoHandle);
-    glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-    glEnableVertexAttribArray(g_AttribLocationPosition);
-    glEnableVertexAttribArray(g_AttribLocationUV);
-    glEnableVertexAttribArray(g_AttribLocationColor);
+    gl::GenVertexArrays(1, &g_VaoHandle);
+    gl::BindVertexArray(g_VaoHandle);
+    gl::BindBuffer(gl::ARRAY_BUFFER, g_VboHandle);
+    gl::EnableVertexAttribArray(g_AttribLocationPosition);
+    gl::EnableVertexAttribArray(g_AttribLocationUV);
+    gl::EnableVertexAttribArray(g_AttribLocationColor);
 
 #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
-    glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
-    glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
-    glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
+    gl::VertexAttribPointer(g_AttribLocationPosition, 2, gl::FLOAT, gl::FALSE_, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
+    gl::VertexAttribPointer(g_AttribLocationUV, 2, gl::FLOAT, gl::FALSE_, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
+    gl::VertexAttribPointer(g_AttribLocationColor, 4, gl::UNSIGNED_BYTE, gl::TRUE_, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
 #undef OFFSETOF
 
     ImGui_ImplSfmlGL_CreateFontsTexture();
 
     // Restore modified GL state
-    glBindTexture(GL_TEXTURE_2D, last_texture);
-    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
-    glBindVertexArray(last_vertex_array);
+    gl::BindTexture(gl::TEXTURE_2D, last_texture);
+    gl::BindBuffer(gl::ARRAY_BUFFER, last_array_buffer);
+    gl::BindVertexArray(last_vertex_array);
 
     g_DeviceObjectsCreated = true;
 

@@ -1,7 +1,7 @@
 #include <SFML/Window.hpp>
 #include <imgui.h>
-#include <GL/glew.h>
 #include "imgui_impl_sfml_gl.h"
+#include "gl_imgui_gl_core_3_2.hpp"
 
 int main()
 {
@@ -14,9 +14,6 @@ int main()
     context_settings.attributeFlags = sf::ContextSettings::Attribute::Core;
 
     sf::Window window{ sf::VideoMode{ 1280, 720 }, "Dear imgui,", sf::Style::Default, context_settings };
-
-    glewExperimental = GL_TRUE;
-    glewInit();
 
     ImGui_ImplSfmlGL_Init();
 
@@ -50,7 +47,7 @@ int main()
         ImGui_ImplSfmlGL_NewFrame( window, elapsed );
         ImGui::ShowTestWindow( &show_test_window );
 
-        glClear(GL_COLOR_BUFFER_BIT);
+	imgui::gl::Clear(imgui::gl::COLOR_BUFFER_BIT);
         ImGui::Render();
         window.display();
     }
