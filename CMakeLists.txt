@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
 
-find_package(SFML 2.3 COMPONENTS window system REQUIRED)
+find_package(SFML 2.4 COMPONENTS window system REQUIRED)
 find_package(GLEW)
 find_package(OpenGL)
 
