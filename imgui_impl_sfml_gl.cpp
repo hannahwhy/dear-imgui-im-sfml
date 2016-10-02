@@ -138,9 +138,7 @@ bool ImGui_ImplSfmlGL_Init()
 
     io.RenderDrawListsFn = ImGui_ImplSfmlGL_RenderDrawLists;
 
-    gl::sys::LoadFunctions();
-
-    return true;
+    return gl::sys::LoadFunctions();
 }
 
 void ImGui_ImplSfmlGL_Shutdown()

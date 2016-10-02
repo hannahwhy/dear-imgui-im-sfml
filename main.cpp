@@ -15,7 +15,10 @@ int main()
 
     sf::Window window{ sf::VideoMode{ 1280, 720 }, "Dear imgui,", sf::Style::Default, context_settings };
 
-    ImGui_ImplSfmlGL_Init();
+    if ( !ImGui_ImplSfmlGL_Init() ) {
+        std::cerr << "unable to initialize imgui" << std::endl;
+        return 1;
+    }
 
     bool running = true;
     bool show_test_window = false;
@@ -47,7 +50,7 @@ int main()
         ImGui_ImplSfmlGL_NewFrame( window, elapsed );
         ImGui::ShowTestWindow( &show_test_window );
 
-	imgui::gl::Clear(imgui::gl::COLOR_BUFFER_BIT);
+        imgui::gl::Clear(imgui::gl::COLOR_BUFFER_BIT);
         ImGui::Render();
         window.display();
     }
