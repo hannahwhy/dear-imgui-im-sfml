@@ -7,6 +7,7 @@
 static bool g_DeviceObjectsCreated = false;
 static GLuint g_FontTexture = 0;
 static bool g_MousePressed[5] = { false, false, false, false, false };
+static float g_MouseWheelDelta = 0.0f;
 
 // OpenGL objects
 static int          g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
@@ -167,11 +168,13 @@ void ImGui_ImplSfmlGL_NewFrame( sf::Window& window, const sf::Time& dt )
     io.MouseDown[ 2 ] = g_MousePressed[ 2 ] || sf::Mouse::isButtonPressed( sf::Mouse::Button::Right );
     io.MouseDown[ 3 ] = g_MousePressed[ 3 ] || sf::Mouse::isButtonPressed( sf::Mouse::Button::XButton1 );
     io.MouseDown[ 4 ] = g_MousePressed[ 4 ] || sf::Mouse::isButtonPressed( sf::Mouse::Button::XButton2 );
+    io.MouseWheel     = g_MouseWheelDelta;
     g_MousePressed[ 0 ] = false;
     g_MousePressed[ 1 ] = false;
     g_MousePressed[ 2 ] = false;
     g_MousePressed[ 3 ] = false;
     g_MousePressed[ 4 ] = false;
+    g_MouseWheelDelta   = 0.0f;
 
     ImGui::NewFrame();
 }
@@ -188,7 +191,7 @@ bool ImGui_ImplSfmlGL_ProcessEvent( const sf::Event& event )
             io.MousePos = ImVec2( -1.0f, -1.0f );
             return true;
         case sf::Event::MouseWheelScrolled:
-            io.MouseWheel = event.mouseWheelScroll.delta;
+            g_MouseWheelDelta = event.mouseWheelScroll.delta;
             return true;
         case sf::Event::MouseButtonPressed: {
             const auto& button = event.mouseButton.button;
