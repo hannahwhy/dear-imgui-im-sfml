@@ -217,11 +217,11 @@ bool ImGui_ImplSfmlGL_ProcessEvent( const sf::Event& event )
         }
         case sf::Event::KeyPressed:
         case sf::Event::KeyReleased:
-            io.KeysDown[ event.key.code ] = ( event.type == sf::Event::KeyPressed );
-            io.KeyShift = event.key.shift;
-            io.KeyCtrl = event.key.control;
-            io.KeyAlt = event.key.alt;
-            io.KeySuper = event.key.system;
+            io.KeysDown[ event.key.code ] = event.type == sf::Event::KeyPressed;
+            io.KeyShift = sf::Keyboard::isKeyPressed( sf::Keyboard::LShift ) || sf::Keyboard::isKeyPressed( sf::Keyboard::RShift );
+            io.KeyCtrl = sf::Keyboard::isKeyPressed( sf::Keyboard::LControl ) || sf::Keyboard::isKeyPressed( sf::Keyboard::RControl );
+            io.KeyAlt = sf::Keyboard::isKeyPressed( sf::Keyboard::LAlt ) || sf::Keyboard::isKeyPressed( sf::Keyboard::RAlt );
+            io.KeySuper = sf::Keyboard::isKeyPressed( sf::Keyboard::LSystem ) || sf::Keyboard::isKeyPressed( sf::Keyboard::RSystem );
             return true;
         default:
             return false;
